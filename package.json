@@ -2,17 +2,16 @@
   "name": "swackets",
   "tag": "v0.0.0",
   "main": "./lib/swackets",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Colour empowered brackets.",
-  "keywords": [
-  ],
+  "keywords": [],
   "repository": "https://github.com/jrattray13/swackets",
   "license": "MIT",
   "engines": {
     "atom": ">=1.0.0"
   },
   "dependencies": {
-     "underscore-plus": "1.x",
-     "jquery": "1.x"
+    "underscore-plus": "1.x",
+    "jquery": "1.x"
   }
-} 
+}
