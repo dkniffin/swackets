@@ -9,7 +9,7 @@
   "repository": "https://github.com/jrattray13/swackets",
   "license": "MIT",
   "engines": {
-    "atom": ">=1.0.0 <2.0.0"
+    "atom": ">=1.0.0"
   },
   "dependencies": {
      "underscore-plus": "1.x",

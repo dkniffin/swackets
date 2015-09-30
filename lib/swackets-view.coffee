@@ -39,6 +39,7 @@ class SwacketsView
                     firstLine = $(singleGroup).children(".line").first().attr('data-screen-row')
                     range = new Range(new Point(0, 0), new Point(Number(firstLine), 0))
                     editor = atom.workspace.getActiveTextEditor()
+                    return unless editor
                     northOfTheScroll = editor.getTextInBufferRange(range)
                     unseenLength = northOfTheScroll.length
 
@@ -109,6 +110,7 @@ class SwacketsView
                     firstLine = $(singleGroup).children(".line").first().attr('data-screen-row')
                     range = new Range(new Point(0, 0), new Point(Number(firstLine), 0))
                     editor = atom.workspace.getActiveTextEditor()
+                    return unless editor
                     northOfTheScroll = editor.getTextInBufferRange(range)
                     unseenLength = northOfTheScroll.length
 
