@@ -1,0 +1,50 @@
+// The ui-variables file is provided by base themes provided by Atom.
+@import "ui-variables";
+
+
+.lowSweat {
+    color: #ff0099;
+}
+
+:host, atom-text-editor, atom-text-editor::shadow {
+  atom-text-editor .highlight.highlight-selected .region {
+    position: absolute;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .highlights {
+
+
+      .lowSweat .region {
+          background-color: rgba(255, 128, 64, 0.2);
+          border-color: rgba(255, 128, 64, 0.4);
+          border-width: 2px;
+          margin-left: 1px;
+          border-style: solid;
+          border-radius: 9000px;
+      }
+
+
+      .mediumSweat .region {
+          background-color: rgba(255, 128, 64, 0.2);
+          border-color: rgba(255, 128, 64, 0.4);
+          border-width: 2px;
+          margin-left: 1px;
+          border-style: solid;
+          border-radius: 9000px;
+      }
+
+
+      .highSweat .region {
+          background-color: rgba(255, 128, 64, 0.2);
+          border-color: rgba(255, 128, 64, 0.4);
+          border-width: 2px;
+          margin-left: 1px;
+          border-style: solid;
+          border-radius: 9000px;
+      }
+
+  }
+
+}
