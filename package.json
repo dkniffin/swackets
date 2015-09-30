@@ -1,11 +1,12 @@
 {
-  "name": "Swackets",
+  "name": "swackets",
+  "tag": "swackets",
   "main": "./lib/swackets",
-  "version": "0.0.7",
+  "version": "0.0.0",
   "description": "Colour empowered brackets.",
   "keywords": [
   ],
-  "repository": "https://github.com/atom/swackets",
+  "repository": "https://github.com/jrattray13/swackets",
   "license": "MIT",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
