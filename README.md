@@ -6,3 +6,4 @@ Empowers your brackets with colours.
 
 Once enabled from Atom -> Preferences, reload Atom  (Ctrl+Alt+Cmd+L) to activate swackets.
 
+![Swackets In Action](http://i.imgur.com/KP9bxf0.png)
