@@ -1,25 +1,24 @@
 {Range, Point} = require 'atom'
 $ = require 'jquery'
-_ = require 'underscore-plus'
 
 module.exports =
 class SwacketsView
 
     constructor: ->
-        @sweatifyScrolls()
+        @sweatify()
         editor = atom.workspace.getActiveTextEditor()
         return unless editor
 
-        @capSweat = _.throttle(@sweatifyScrolls, 200);
         editor.onDidChange(@sweatifyInput)
-        editor.onDidChangeScrollTop(@capSweat)
+        setInterval =>
+            @sweatify()
+        , 200
 
         atom.workspace.onDidChangeActivePaneItem =>
-            @sweatifyScrolls()
+            @sweatify()
             editor = atom.workspace.getActiveTextEditor()
             return unless editor
             editor.onDidChange(@sweatifyInput)
-            editor.onDidChangeScrollTop(@capSweat)
 
 
     sweatifyInput: ->
@@ -44,25 +43,12 @@ class SwacketsView
                     unseenLength = northOfTheScroll.length
 
                     curChar = 0
-                    curSpeechChar = undefined
+                    curSpeechChar = undefined #TODO omit comments and speechmarks (HARD)
                     while (curChar < unseenLength)
 
-                        if (northOfTheScroll[curChar] == "'" and curSpeechChar == undefined)
-                            curSpeechChar = "'"
-
-                        if (northOfTheScroll[curChar] == "'" and curSpeechChar == "'")
-                            curSpeechChar = undefined
-
-                        if (northOfTheScroll[curChar] == '"' and curSpeechChar == undefined)
-                            curSpeechChar = '"'
-
-                        if (northOfTheScroll[curChar] == '"' and curSpeechChar == '"')
-                            curSpeechChar = undefined
-
-                        if (northOfTheScroll[curChar] == '{' and curSpeechChar == undefined)
+                        if (northOfTheScroll[curChar] == '{')
                             sweatyness++
-
-                        if (northOfTheScroll[curChar] == '}' and curSpeechChar == undefined)
+                        else if (northOfTheScroll[curChar] == '}')
                             sweatyness = Math.max.apply @, [(sweatyness-1), 0]
 
                         curChar++ ##WHILE##
@@ -88,12 +74,13 @@ class SwacketsView
                         sweatyness = Math.max.apply @, [(sweatyness-1), 0]
 
                 numLineGroups-- ##WHILE##
-        , 14
+        , 24
 
 
 
 
-    sweatifyScrolls: ->
+    sweatify: ->
+        console.log('hi')
         sweatyness = 0
         colors = ['#ff3333', '#ba8cb8', '#8ab7d8', '#60dd60', '#ffff70', '#ea9d70', '#ff7070']
 
@@ -115,25 +102,12 @@ class SwacketsView
                     unseenLength = northOfTheScroll.length
 
                     curChar = 0
-                    curSpeechChar = undefined
+                    curSpeechChar = undefined #TODO omit comments and speechmarks (HARD)
                     while (curChar < unseenLength)
 
-                        if (northOfTheScroll[curChar] == "'" and curSpeechChar == undefined)
-                            curSpeechChar = "'"
-
-                        if (northOfTheScroll[curChar] == "'" and curSpeechChar == "'")
-                            curSpeechChar = undefined
-
-                        if (northOfTheScroll[curChar] == '"' and curSpeechChar == undefined)
-                            curSpeechChar = '"'
-
-                        if (northOfTheScroll[curChar] == '"' and curSpeechChar == '"')
-                            curSpeechChar = undefined
-
-                        if (northOfTheScroll[curChar] == '{' and curSpeechChar == undefined)
+                        if (northOfTheScroll[curChar] == '{')
                             sweatyness++
-
-                        if (northOfTheScroll[curChar] == '}' and curSpeechChar == undefined)
+                        else if (northOfTheScroll[curChar] == '}')
                             sweatyness = Math.max.apply @, [(sweatyness-1), 0]
 
                         curChar++ ##WHILE##
@@ -159,4 +133,4 @@ class SwacketsView
                         sweatyness = Math.max.apply @, [(sweatyness-1), 0]
 
                 numLineGroups-- ##WHILE##
-        , 14
+        , 24
