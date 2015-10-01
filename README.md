@@ -6,8 +6,8 @@ Empowers your brackets with colours.
 
 Once enabled from Atom -> Preferences, reload Atom  (Ctrl+Alt+Cmd+L) to activate Swackets.
 
-*Sourcecode must be focused to Swacketify.*
+*Sourcecode must have file extension and be focused to Swacketify.*
 
-[Experimental: Potential performance issues for very long files]
+[Experimental: Supported on Atom 1.0.19+ with potential performance issues for very long files]
 
 ![Swackets In Action](http://i.imgur.com/Wjkwp35.png)
