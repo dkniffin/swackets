@@ -4,7 +4,7 @@
 
 Empowers your brackets with colours.
 
-
+**apm install swackets**
 
 Once enabled from Atom -> Preferences, reload Atom  (Ctrl+Alt+Cmd+L) to activate Swackets.
 
