@@ -23,7 +23,7 @@ class SwacketsView
 
     sweatify: ->
         sweatyness = 0
-        colors = ['#ff3333', '#ba8cb8', '#8ab7d8', '#60dd60', '#ffff70', '#ea9d70', '#ff7070']
+        colors = ['#ff3333', '#ba8cb8', '#8ab7d8', '#60dd60', '#ffff70', '#ea9d70', '#e76464']
 
         setTimeout ->
 
@@ -56,7 +56,7 @@ class SwacketsView
                     firstGroup = true
                     ####DONE WITH PRE-BUFFER GUESSTIMATION####
 
-                $(singleGroup).find('span').each (index, element) =>
+                $(singleGroup).find('span').each (index, element) => 
 
                     if ($(element).html()[0] == '{')
                         sweatyness++
