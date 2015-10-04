@@ -4,11 +4,11 @@
 
 Empowers your brackets with colours.
 
-**apm install swackets**
+apm install **swackets**
 
-Once enabled from Atom -> Preferences, reload Atom  (Ctrl+Alt+Cmd+L) to activate Swackets.
+*Sourcecode must have recognised file extension and be focused to Swacketify.*
 
-*Sourcecode must have file extension and be focused to Swacketify.*
+Reload Atom with Ctrl + Alt + Cmd + L if Swackets is not enabled after install.
 
 [Experimental: Supported on Atom 1.0.19+ with potential performance issues for very long files]
 

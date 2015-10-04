@@ -1,24 +1,33 @@
-{Range, Point} = require 'atom'
+{Range, Point, CompositeDisposable} = require 'atom'
 $ = require 'jquery'
 
 module.exports =
 class SwacketsView
 
+    intervalID = null
+
     constructor: ->
         @sweatify()
-        editor = atom.workspace.getActiveTextEditor()
-        return unless editor
 
-        editor.onDidChange(@sweatify)
-        setInterval =>
-            @sweatify()
-        , 100
-
-        atom.workspace.onDidChangeActivePaneItem =>
+        @subscriptions = new CompositeDisposable
+        @subscriptions.add atom.workspace.onDidChangeActivePaneItem =>
             @sweatify()
             editor = atom.workspace.getActiveTextEditor()
             return unless editor
-            editor.onDidChange(@sweatify)
+            @subscriptions.add editor.onDidChange(@sweatify)
+
+        intervalID = setInterval =>
+            @sweatify()
+        , 100
+
+        editor = atom.workspace.getActiveTextEditor()
+        return unless editor
+        @subscriptions.add editor.onDidChange(@sweatify)
+
+    destroy: ->
+        clearInterval(intervalID)
+        @subscriptions.dispose()
+
 
 
     sweatify: ->
@@ -56,7 +65,7 @@ class SwacketsView
                     firstGroup = true
                     ####DONE WITH PRE-BUFFER GUESSTIMATION####
 
-                $(singleGroup).find('span').each (index, element) => 
+                $(singleGroup).find('span').each (index, element) =>
 
                     if ($(element).html()[0] == '{')
                         sweatyness++

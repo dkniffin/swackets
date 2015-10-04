@@ -10,9 +10,7 @@ module.exports =
 
   deactivate: ->
     @areaView.destroy()
+    @areaView = null
 
   toggle: ->
-    if @areaView.disabled
-      @areaView.enable()
-    else
-      @areaView.disable()
+    #TODO toggle between underlining and swackets
