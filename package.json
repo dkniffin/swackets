@@ -2,7 +2,7 @@
   "name": "swackets",
   "tag": "v0.0.0",
   "main": "./lib/swackets",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Colour empowered brackets.",
   "keywords": [
     "brackets",
