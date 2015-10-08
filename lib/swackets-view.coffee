@@ -31,7 +31,7 @@ class SwacketsView
 
 
     sweatify: ->
-        sweatyness = 0
+        sweatyness = -1
         colors = atom.config.get('swackets.colors')
 
         setTimeout ->
