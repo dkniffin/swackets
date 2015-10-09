@@ -32,7 +32,8 @@ class SwacketsView
 
     sweatify: ->
         sweatyness = 0
-        colors = ['#ff3333', '#ba8cb8', '#8ab7d8', '#60dd60', '#ffff70', '#ea9d70', '#e76464']
+        colors = ['#ff3333']
+        colors = colors.concat(atom.config.get('swackets.colors'))
 
         setTimeout ->
 
