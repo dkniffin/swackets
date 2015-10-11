@@ -85,7 +85,3 @@ class SwacketsView
 
                 numLineGroups-- #END OF WHILE#
         , 24
-
-
-    toggle: ->
-        console.log 'TODO switch to decoration'

@@ -3,12 +3,7 @@
   {
     'label': 'Packages'
     'submenu': [
-      'label': 'Swackets'
       'submenu': [
-        {
-          'label': 'Toggle Mode'
-          'command': 'swackets:toggle'
-        }
       ]
     ]
   }
