@@ -7,8 +7,6 @@ apm install **swackets**
 
 *Sourcecode must have recognised file extension and be focused to Swacketify.*
 
-[Experimental: Toggle decoration style with **Cmd + Alt + S** if default mode does not work (Conflicting packages, unsupported file or Atom version <1.0.19)]
-
 ##TODO:
 
 - Parenthesis support
