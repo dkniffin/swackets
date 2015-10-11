@@ -1,6 +1,5 @@
 {
   "name": "swackets",
-  "tag": "v0.0.0",
   "main": "./lib/swackets",
   "version": "0.5.0",
   "description": "Colour empowered brackets.",

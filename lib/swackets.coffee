@@ -18,6 +18,3 @@ module.exports =
   deactivate: ->
     @areaView.destroy()
     @areaView = null
-
-  toggle: ->
-    #TODO toggle between underlining and swackets

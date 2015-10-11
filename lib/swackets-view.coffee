@@ -24,6 +24,8 @@ class SwacketsView
         return unless editor
         @subscriptions.add editor.onDidChange(@sweatify)
 
+        @subscriptions.add atom.commands.add 'atom-workspace', 'swackets:toggle': => @toggle()
+
     destroy: ->
         clearInterval(intervalID)
         @subscriptions.dispose()
@@ -61,27 +63,29 @@ class SwacketsView
                         else if (northOfTheScroll[curChar] == '}')
                             sweatyness = Math.max.apply @, [(sweatyness-1), 0]
 
-                        curChar++ ##WHILE##
+                        curChar++
 
                     firstGroup = true
                     ####DONE WITH PRE-BUFFER GUESSTIMATION####
 
                 $(singleGroup).find('span').each (index, element) =>
-
-                    if ($(element).html()[0] == '{')
+                    if ($(element).html()[0] == '{' || $(element).html()[1] == '{')
                         sweatyness++
-
                         sweatcap = Math.max.apply @, [sweatyness, 0]
                         sweatcap = Math.min.apply @, [sweatcap, colors.length - 1]
                         $(element).css('color', colors[sweatcap])
 
-
-                    if ($(element).html()[0] == '}')
+                    if ($(element).html()[0] == '}' || $(element).html()[1] == '}')
                         sweatcap = Math.max.apply @, [sweatyness, 0]
                         sweatcap = Math.min.apply @, [sweatcap, colors.length - 1]
                         $(element).css('color', colors[sweatcap])
 
                         sweatyness = Math.max.apply @, [(sweatyness-1), 0]
 
-                numLineGroups-- ##WHILE##
+
+                numLineGroups-- #END OF WHILE#
         , 24
+
+
+    toggle: ->
+        console.log 'TODO switch to decoration'
