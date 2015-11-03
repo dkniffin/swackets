@@ -48,6 +48,12 @@ class SwacketsView
 
                 if (!firstGroup and singleGroup.length >= 1)
                     firstLine = $(singleGroup).children(".line").first().attr('data-screen-row')
+                    secondLine = $(singleGroup).children(".line").eq(1).attr('data-screen-row') #1 is 2nd index
+
+                    if (firstLine == "30" && secondLine != "31")
+                        numLineGroups--
+                        continue #Atom bug with DOM
+
                     range = new Range(new Point(0, 0), new Point(Number(firstLine), 0))
                     editor = atom.workspace.getActiveTextEditor()
                     return unless editor
@@ -69,6 +75,7 @@ class SwacketsView
                     ####DONE WITH PRE-BUFFER GUESSTIMATION####
 
                 $(singleGroup).find('span').each (index, element) =>
+                    len = $(element).html().length
                     if ($(element).html()[0] == '{' || $(element).html()[1] == '{')
                         sweatyness++
                         sweatcap = Math.max.apply @, [sweatyness, 0]
