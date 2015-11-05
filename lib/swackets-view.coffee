@@ -50,7 +50,7 @@ class SwacketsView
                     firstLine = $(singleGroup).children(".line").first().attr('data-screen-row')
                     secondLine = $(singleGroup).children(".line").eq(1).attr('data-screen-row') #1 is 2nd index
 
-                    if (firstLine == "30" && secondLine != "31")
+                    if (Number(secondLine) - Number(firstLine) != 1)
                         numLineGroups--
                         continue #Atom bug with DOM
 
