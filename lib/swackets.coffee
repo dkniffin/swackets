@@ -6,7 +6,7 @@ module.exports =
   config:
     colors:
         title: 'Syntax Colours To Use:'
-        default: ['#ba8cb8', '#8ab7d8', '#60dd60', '#ffff70', '#ea9d70', '#e76464']
+        default: ['#9c5e99', '#8ab7d8', '#60dd60', '#ffff70', '#ea9d70', '#971717']
         type: 'array'
         items:
             type: 'string'
@@ -14,7 +14,7 @@ module.exports =
     colors2:
         title: 'Syntax Colours To Alternate:'
         description: '[**SIMILAR** colours to first set to differentiate equally nested syntax]'
-        default: ['#ba8cb8', '#8ab7d8', '#60dd60', '#ffff70', '#ea9d70', '#e76464']
+        default: ['#f3a0f2', '#3c81b3', '#478a03', '#afaf00', '#b7761d', '#d82121']
         type: 'array'
         items:
             type: 'string'

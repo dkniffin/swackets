@@ -18,7 +18,7 @@ class SwacketsView
 
         intervalID = setInterval =>
             @sweatify()
-        , 130 #onScroll better in some cases, worse when scrolling
+        , 140 #onScroll better in some cases, worse when scrolling
 
         editor = atom.workspace.getActiveTextEditor()
         return unless editor
@@ -35,9 +35,14 @@ class SwacketsView
 
         colors = ['#ff3333']
         colors = colors.concat(atom.config.get('swackets.colors'))
+        curColor = colors.slice(0)
 
-        colors2 = ['#ff3333']
-        colors2 = colors2.concat(atom.config.get('swackets.colors2'))
+        colorsAlt = ['#ff3333']
+        colorsAlt = colorsAlt.concat(atom.config.get('swackets.colors2'))
+        open = false;
+        shouldAlternateColor = false;
+        even = false;
+
 
         if (atom.config.get('swackets.syntax') == 'Brackets')
             openSyntax = '{'
@@ -90,15 +95,24 @@ class SwacketsView
                     if ($(element).html()[0] == openSyntax || $(element).html()[1] == openSyntax)
                         sweatyness++
                         sweatcap = Math.max.apply @, [sweatyness, 0]
-                        sweatcap = Math.min.apply @, [sweatcap, colors.length - 1]
-                        $(element).css('color', colors[sweatcap])
+                        sweatcap = Math.min.apply @, [sweatcap, curColor.length - 1]
+
+                        $(element).css('color', curColor[sweatcap])
+                        ##End of open brace colouring##
+
 
                     if ($(element).html()[0] == closeSyntax || $(element).html()[1] == closeSyntax)
                         sweatcap = Math.max.apply @, [sweatyness, 0]
-                        sweatcap = Math.min.apply @, [sweatcap, colors.length - 1]
-                        $(element).css('color', colors[sweatcap])
+                        sweatcap = Math.min.apply @, [sweatcap, curColor.length - 1]
+                        $(element).css('color', curColor[sweatcap])
 
                         sweatyness = Math.max.apply @, [(sweatyness-1), 0]
+
+                        if curColor[sweatcap] == colors[sweatcap]
+                            curColor[sweatcap] = colorsAlt[sweatcap]
+                        else
+                            curColor[sweatcap] = colors[sweatcap]
+                        ##End of close brace colouring##
 
 
                 numLineGroups-- #END OF WHILE#
