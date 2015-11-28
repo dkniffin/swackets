@@ -8,6 +8,6 @@ apm install **swackets**
 
 [Experimental: Supported on Atom 1.0.19+ with potential performance issues for very long files]
 
-(Other packages may conflict with Swackets, if it is not working try disabling before raising issue)
+(Other packages may conflict with Swackets, please choose wisely)
 
 ![Swackets In Action](http://i.imgur.com/Wjkwp35.png)
