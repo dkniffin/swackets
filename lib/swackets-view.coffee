@@ -18,13 +18,11 @@ class SwacketsView
 
         intervalID = setInterval =>
             @sweatify()
-        , 100
+        , 130 #onScroll better in some cases, worse when scrolling
 
         editor = atom.workspace.getActiveTextEditor()
         return unless editor
         @subscriptions.add editor.onDidChange(@sweatify)
-
-        @subscriptions.add atom.commands.add 'atom-workspace', 'swackets:toggle': => @toggle()
 
     destroy: ->
         clearInterval(intervalID)
@@ -34,8 +32,19 @@ class SwacketsView
 
     sweatify: ->
         sweatyness = 0
+
         colors = ['#ff3333']
         colors = colors.concat(atom.config.get('swackets.colors'))
+
+        colors2 = ['#ff3333']
+        colors2 = colors2.concat(atom.config.get('swackets.colors2'))
+
+        if (atom.config.get('swackets.syntax') == 'Brackets')
+            openSyntax = '{'
+            closeSyntax = '}'
+        else
+            openSyntax = '('
+            closeSyntax = ')'
 
         setTimeout ->
 
@@ -64,9 +73,9 @@ class SwacketsView
                     curSpeechChar = undefined #TODO omit comments and speechmarks (HARD)
                     while (curChar < unseenLength)
 
-                        if (northOfTheScroll[curChar] == '{')
+                        if (northOfTheScroll[curChar] == openSyntax)
                             sweatyness++
-                        else if (northOfTheScroll[curChar] == '}')
+                        else if (northOfTheScroll[curChar] == closeSyntax)
                             sweatyness = Math.max.apply @, [(sweatyness-1), 0]
 
                         curChar++
@@ -74,15 +83,17 @@ class SwacketsView
                     firstGroup = true
                     ####DONE WITH PRE-BUFFER GUESSTIMATION####
 
+
+                #Now color bracket spans:
                 $(singleGroup).find('span').each (index, element) =>
                     len = $(element).html().length
-                    if ($(element).html()[0] == '{' || $(element).html()[1] == '{')
+                    if ($(element).html()[0] == openSyntax || $(element).html()[1] == openSyntax)
                         sweatyness++
                         sweatcap = Math.max.apply @, [sweatyness, 0]
                         sweatcap = Math.min.apply @, [sweatcap, colors.length - 1]
                         $(element).css('color', colors[sweatcap])
 
-                    if ($(element).html()[0] == '}' || $(element).html()[1] == '}')
+                    if ($(element).html()[0] == closeSyntax || $(element).html()[1] == closeSyntax)
                         sweatcap = Math.max.apply @, [sweatyness, 0]
                         sweatcap = Math.min.apply @, [sweatcap, colors.length - 1]
                         $(element).css('color', colors[sweatcap])
@@ -91,4 +102,4 @@ class SwacketsView
 
 
                 numLineGroups-- #END OF WHILE#
-        , 24
+        , 16
