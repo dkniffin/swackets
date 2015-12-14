@@ -30,10 +30,12 @@ class SwacketsView
     sweatify: ->
         if (atom.config.get('swackets.syntax') == 'Brackets')
             openSyntax = '{'
-            regex = /^.*?([\{\}])$/
+            closeSyntax = '}'
+            regex = /^.*?([\{\}]+)$/
         else
             openSyntax = '('
-            regex = /^.*?([\(\)])$/
+            closeSyntax = ')'
+            regex = /^.*?([\(\)]+)$/
 
         setTimeout ->
             lines = document.querySelector("atom-text-editor.is-focused::shadow .lines")
@@ -52,7 +54,7 @@ class SwacketsView
                   openBrackets++
                   if openBrackets > 11
                     openBrackets = 0
-                else
+                else if match[1] == closeSyntax
                   openBrackets--
                   if openBrackets < 0
                     openBrackets = 11
