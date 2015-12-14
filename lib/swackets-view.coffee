@@ -1,5 +1,4 @@
-{Range, Point, CompositeDisposable} = require 'atom'
-$ = require 'jquery'
+{CompositeDisposable} = require 'atom'
 
 module.exports =
 class SwacketsView
@@ -28,92 +27,39 @@ class SwacketsView
         clearInterval(intervalID)
         @subscriptions.dispose()
 
-
-
     sweatify: ->
-        sweatyness = 0
-
-        colors = ['#ff3333']
-        colors = colors.concat(atom.config.get('swackets.colors'))
-        curColor = colors.slice(0)
-
-        colorsAlt = ['#ff3333']
-        colorsAlt = colorsAlt.concat(atom.config.get('swackets.colors2'))
-        open = false;
-        shouldAlternateColor = false;
-        even = false;
-
-
         if (atom.config.get('swackets.syntax') == 'Brackets')
             openSyntax = '{'
-            closeSyntax = '}'
+            regex = /^.*?([\{\}])$/
         else
             openSyntax = '('
-            closeSyntax = ')'
+            regex = /^.*?([\(\)])$/
 
         setTimeout ->
+            lines = document.querySelector("atom-text-editor.is-focused::shadow .lines")
+            return if !lines
+            lines.style.display = 'none'
 
-            lineGroups = $("atom-text-editor.is-focused::shadow .lines > div:not(.cursors) > div")
-            numLineGroups = lineGroups.toArray().length
-            firstGroup = undefined;
+            openBrackets = 0
 
-            while numLineGroups >= 0
-                singleGroup = $(lineGroups).filter -> $(this).css('zIndex') == (''+numLineGroups)
+            spans = document.querySelectorAll("atom-text-editor.is-focused::shadow .lines span")
 
-                if (!firstGroup and singleGroup.length >= 1)
-                    firstLine = $(singleGroup).children(".line").first().attr('data-screen-row')
-                    secondLine = $(singleGroup).children(".line").eq(1).attr('data-screen-row') #1 is 2nd index
+            for span in spans
+              match = span.innerHTML.match(regex)
+              if match and span.className.indexOf('comment') < 0
+                color = openBrackets
+                if match[1] == openSyntax
+                  openBrackets++
+                  if openBrackets > 11
+                    openBrackets = 0
+                else
+                  openBrackets--
+                  if openBrackets < 0
+                    openBrackets = 11
+                  color = openBrackets
 
-                    if (Number(secondLine) - Number(firstLine) != 1)
-                        numLineGroups--
-                        continue #Atom bug with DOM
+                className = ' swackets-' + color
+                span.className = span.className.replace(/( swackets-\d+|$)/, className)
 
-                    range = new Range(new Point(0, 0), new Point(Number(firstLine), 0))
-                    editor = atom.workspace.getActiveTextEditor()
-                    return unless editor
-                    northOfTheScroll = editor.getTextInBufferRange(range)
-                    unseenLength = northOfTheScroll.length
-
-                    curChar = 0
-                    curSpeechChar = undefined #TODO omit comments and speechmarks (HARD)
-                    while (curChar < unseenLength)
-
-                        if (northOfTheScroll[curChar] == openSyntax)
-                            sweatyness++
-                        else if (northOfTheScroll[curChar] == closeSyntax)
-                            sweatyness = Math.max.apply @, [(sweatyness-1), 0]
-
-                        curChar++
-
-                    firstGroup = true
-                    ####DONE WITH PRE-BUFFER GUESSTIMATION####
-
-
-                #Now color bracket spans:
-                $(singleGroup).find('span').each (index, element) =>
-                    len = $(element).html().length
-                    if ($(element).html()[0] == openSyntax || $(element).html()[1] == openSyntax)
-                        sweatyness++
-                        sweatcap = Math.max.apply @, [sweatyness, 0]
-                        sweatcap = Math.min.apply @, [sweatcap, curColor.length - 1]
-
-                        $(element).css('color', curColor[sweatcap])
-                        ##End of open brace colouring##
-
-
-                    if ($(element).html()[0] == closeSyntax || $(element).html()[1] == closeSyntax)
-                        sweatcap = Math.max.apply @, [sweatyness, 0]
-                        sweatcap = Math.min.apply @, [sweatcap, curColor.length - 1]
-                        $(element).css('color', curColor[sweatcap])
-
-                        sweatyness = Math.max.apply @, [(sweatyness-1), 0]
-
-                        if curColor[sweatcap] == colors[sweatcap]
-                            curColor[sweatcap] = colorsAlt[sweatcap]
-                        else
-                            curColor[sweatcap] = colors[sweatcap]
-                        ##End of close brace colouring##
-
-
-                numLineGroups-- #END OF WHILE#
+            lines.style.display = ''
         , 16
