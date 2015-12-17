@@ -96,11 +96,11 @@ class SwacketsView
         {openSyntax, closeSyntax} = config
 
         color = openBrackets
-        if match[1] == openSyntax
+        if match[0].indexOf(openSyntax) >= 0 and match[0].indexOf(closeSyntax) < 0
             openBrackets++
             if openBrackets > totalColors
                 openBrackets = 0
-        else if match[1] == closeSyntax
+        else if match[0].indexOf(closeSyntax) >= 0 and match[0].indexOf(openSyntax) < 0
             openBrackets--
             if openBrackets < 0
                 openBrackets = totalColors
