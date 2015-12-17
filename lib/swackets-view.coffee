@@ -7,12 +7,17 @@ class SwacketsView
     openBrackets = 0
     config = {}
     totalColors = 11
+    stylesheet = null
 
     constructor: ->
+        config = @config()
+        @applyStylesheet()
         @sweatifyTimeout()
 
         @subscriptions = new CompositeDisposable
         @subscriptions.add atom.workspace.onDidChangeActivePaneItem =>
+            config = @config()
+            @applyStylesheet()
             @sweatifyTimeout()
             editor = atom.workspace.getActiveTextEditor()
             return unless editor
@@ -34,6 +39,23 @@ class SwacketsView
         else
             return {openSyntax: '(', closeSyntax: ')', regex: /^.*?([\(\)]+)$/}
 
+    getSwacketsStylesheet: ->
+        if !stylesheet
+          stylesheet = document.createElement('style')
+          stylesheet.id = 'swackets-custom-style'
+          stylesheet.appendChild document.createTextNode('')
+          document.head.appendChild stylesheet
+        stylesheet.sheet
+
+    applyStylesheet: ->
+        sheet = @getSwacketsStylesheet()
+        colors = atom.config.get('swackets.colors')
+        totalColors = colors.length - 1
+        for rule in sheet.cssRules
+          sheet.deleteRule(0)
+        for color, index in colors
+          sheet.insertRule("atom-text-editor::shadow .swackets-#{index} {color: #{color}}")
+
     sweatifyTimeout: =>
         setTimeout @sweatify, 16
 
@@ -41,7 +63,6 @@ class SwacketsView
         lines = document.querySelector('atom-text-editor.is-focused::shadow .lines')
         return if !lines
         lines.style.display = 'none'
-        config = @config()
 
         lineGroups = @lineGroupsQueryToArray document.querySelectorAll('atom-text-editor.is-focused::shadow .lines > div:not(.cursors) > div:not(.icon-right)')
         @sweatifyLineGroups(lineGroups)
