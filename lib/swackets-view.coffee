@@ -43,14 +43,20 @@ class SwacketsView
         lines.style.display = 'none'
         config = @config()
 
-        lineGroups = @queryToArray document.querySelectorAll('atom-text-editor.is-focused::shadow .lines > div:not(.cursors) > div:not(.icon-right)')
+        lineGroups = @lineGroupsQueryToArray document.querySelectorAll('atom-text-editor.is-focused::shadow .lines > div:not(.cursors) > div:not(.icon-right)')
         @sweatifyLineGroups(lineGroups)
 
         lines.style.display = ''
 
-    queryToArray: (query) ->
+    lineGroupsQueryToArray: (query) ->
         arr = []
         for item in query
+            # Sometimes, Atom keeps one of the lineGroups with a single line children,
+            # which we need to ignore. For example, when we scroll to the line 192, Atom
+            # may still have a lineGroup with the greatest zIndex with only line 60.
+            # This mess up our calculation for which line is the fist one on the screen so
+            # we can calculate the initial openBracketsOffset
+            continue if item.children.length == 2 and +item.children[1].dataset.screenRow > 0
             arr.push item
         arr
 
@@ -59,7 +65,7 @@ class SwacketsView
             Math.min(1, Math.max(-1, b.style.zIndex - a.style.zIndex))
 
         firstLine = sortedLineGroups[0].querySelector('.line')
-        openBrackets = @openBracketsOffsetFor(+firstLine.getAttribute('data-screen-row'))
+        openBrackets = @openBracketsOffsetFor(+firstLine.dataset.screenRow)
 
         sortedLineGroups.forEach (lineGroup) =>
             spans = lineGroup.querySelectorAll('span:not(.comment)')
