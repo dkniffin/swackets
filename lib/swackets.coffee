@@ -6,7 +6,7 @@ module.exports =
   config:
     colors:
         title: 'Syntax Colours To Use:'
-        default: ['#AAA', '#0F0', '#0FA', '#86F', '#F0F', '#93F']
+        default: ['#9c5e99', '#8ab7d8', '#60dd60', '#ffff70', '#ea9d70', '#971717']
         type: 'array'
         items:
             type: 'string'
