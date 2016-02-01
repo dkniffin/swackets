@@ -1,119 +1,130 @@
 {Range, Point, CompositeDisposable} = require 'atom'
-$ = require 'jquery'
 
 module.exports =
 class SwacketsView
 
     intervalID = null
+    openBrackets = 0
+    config = {}
+    totalColors = 11
+    stylesheet = null
 
     constructor: ->
-        @sweatify()
+        config = @config()
+        @applyStylesheet()
+        @sweatifyTimeout()
 
         @subscriptions = new CompositeDisposable
         @subscriptions.add atom.workspace.onDidChangeActivePaneItem =>
-            @sweatify()
+            config = @config()
+            @applyStylesheet()
+            @sweatifyTimeout()
             editor = atom.workspace.getActiveTextEditor()
             return unless editor
-            @subscriptions.add editor.onDidChange(@sweatify)
+            @subscriptions.add editor.onDidChange(@sweatifyTimeout)
 
-        intervalID = setInterval =>
-            @sweatify()
-        , 140 #onScroll better in some cases, worse when scrolling
+        intervalID = setInterval @sweatifyTimeout, 140 #onScroll better in some cases, worse when scrolling
 
         editor = atom.workspace.getActiveTextEditor()
         return unless editor
-        @subscriptions.add editor.onDidChange(@sweatify)
+        @subscriptions.add editor.onDidChange(@sweatifyTimeout)
 
     destroy: ->
         clearInterval(intervalID)
         @subscriptions.dispose()
 
-
-
-    sweatify: ->
-        sweatyness = 0
-
-        colors = ['#ff3333']
-        colors = colors.concat(atom.config.get('swackets.colors'))
-        curColor = colors.slice(0)
-
-        colorsAlt = ['#ff3333']
-        colorsAlt = colorsAlt.concat(atom.config.get('swackets.colors2'))
-        open = false;
-        shouldAlternateColor = false;
-        even = false;
-
-
+    config: ->
         if (atom.config.get('swackets.syntax') == 'Brackets')
-            openSyntax = '{'
-            closeSyntax = '}'
+            return {openSyntax: '{', closeSyntax: '}', regex: /^.*?([\{\}]+)$/}
         else
-            openSyntax = '('
-            closeSyntax = ')'
+            return {openSyntax: '(', closeSyntax: ')', regex: /^.*?([\(\)]+)$/}
 
-        setTimeout ->
+    getSwacketsStylesheet: ->
+        if !stylesheet
+          stylesheet = document.createElement('style')
+          stylesheet.id = 'swackets-custom-style'
+          stylesheet.appendChild document.createTextNode('')
+          document.head.appendChild stylesheet
+        stylesheet.sheet
 
-            lineGroups = $("atom-text-editor.is-focused::shadow .lines > div:not(.cursors) > div")
-            numLineGroups = lineGroups.toArray().length
-            firstGroup = undefined;
+    applyStylesheet: ->
+        sheet = @getSwacketsStylesheet()
+        colors = atom.config.get('swackets.colors')
+        totalColors = colors.length - 1
+        for rule in sheet.cssRules
+          sheet.deleteRule(0)
+        for color, index in colors
+          sheet.insertRule("atom-text-editor::shadow .swackets-#{index} {color: #{color}}")
 
-            while numLineGroups >= 0
-                singleGroup = $(lineGroups).filter -> $(this).css('zIndex') == (''+numLineGroups)
+    sweatifyTimeout: =>
+        setTimeout @sweatify, 16
 
-                if (!firstGroup and singleGroup.length >= 1)
-                    firstLine = $(singleGroup).children(".line").first().attr('data-screen-row')
-                    secondLine = $(singleGroup).children(".line").eq(1).attr('data-screen-row') #1 is 2nd index
+    sweatify: =>
+        lines = document.querySelector('atom-text-editor.is-focused::shadow .lines')
+        return if !lines
+        lines.style.display = 'none'
 
-                    if (Number(secondLine) - Number(firstLine) != 1)
-                        numLineGroups--
-                        continue #Atom bug with DOM
+        lineGroups = @lineGroupsQueryToArray document.querySelectorAll('atom-text-editor.is-focused::shadow .lines > div:not(.cursors) > div:not(.icon-right)')
+        @sweatifyLineGroups(lineGroups)
 
-                    range = new Range(new Point(0, 0), new Point(Number(firstLine), 0))
-                    editor = atom.workspace.getActiveTextEditor()
-                    return unless editor
-                    northOfTheScroll = editor.getTextInBufferRange(range)
-                    unseenLength = northOfTheScroll.length
+        lines.style.display = ''
 
-                    curChar = 0
-                    curSpeechChar = undefined #TODO omit comments and speechmarks (HARD)
-                    while (curChar < unseenLength)
+    lineGroupsQueryToArray: (query) ->
+        arr = []
+        for item in query
+            # Sometimes, Atom keeps one of the lineGroups with a single line children,
+            # which we need to ignore. For example, when we scroll to the line 192, Atom
+            # may still have a lineGroup with the greatest zIndex with only line 60.
+            # This mess up our calculation for which line is the fist one on the screen so
+            # we can calculate the initial openBracketsOffset
+            continue if item.children.length == 2 and +item.children[1].dataset.screenRow > 0
+            arr.push item
+        arr
 
-                        if (northOfTheScroll[curChar] == openSyntax)
-                            sweatyness++
-                        else if (northOfTheScroll[curChar] == closeSyntax)
-                            sweatyness = Math.max.apply @, [(sweatyness-1), 0]
+    sweatifyLineGroups: (lineGroups) ->
+        sortedLineGroups = lineGroups.sort (a, b) =>
+            Math.min(1, Math.max(-1, b.style.zIndex - a.style.zIndex))
 
-                        curChar++
+        firstLine = sortedLineGroups[0].querySelector('.line')
+        openBrackets = @openBracketsOffsetFor(+firstLine.dataset.screenRow)
 
-                    firstGroup = true
-                    ####DONE WITH PRE-BUFFER GUESSTIMATION####
+        sortedLineGroups.forEach (lineGroup) =>
+            spans = lineGroup.querySelectorAll('span:not(.comment)')
+            @sweatifySpans(spans)
 
+    openBracketsOffsetFor: (lineNumber) ->
+        {openSyntax, closeSyntax} = config
 
-                #Now color bracket spans:
-                $(singleGroup).find('span').each (index, element) =>
-                    len = $(element).html().length
-                    if ($(element).html()[0] == openSyntax || $(element).html()[1] == openSyntax)
-                        sweatyness++
-                        sweatcap = Math.max.apply @, [sweatyness, 0]
-                        sweatcap = Math.min.apply @, [sweatcap, curColor.length - 1]
+        range = new Range(new Point(0, 0), new Point(lineNumber, 0))
+        editor = atom.workspace.getActiveTextEditor()
+        return 0 unless editor
+        text = editor.getTextInBufferRange(range)
 
-                        $(element).css('color', curColor[sweatcap])
-                        ##End of open brace colouring##
+        openBracketsOffset = 0
+        openBracketsOffset += text.match(new RegExp('\\' + openSyntax, 'g'))?.length || 0
+        openBracketsOffset -= text.match(new RegExp('\\' + closeSyntax, 'g'))?.length || 0
 
+        return Math.max(0, openBracketsOffset % 11)
 
-                    if ($(element).html()[0] == closeSyntax || $(element).html()[1] == closeSyntax)
-                        sweatcap = Math.max.apply @, [sweatyness, 0]
-                        sweatcap = Math.min.apply @, [sweatcap, curColor.length - 1]
-                        $(element).css('color', curColor[sweatcap])
+    sweatifySpans: (spans) ->
+        {regex} = config
 
-                        sweatyness = Math.max.apply @, [(sweatyness-1), 0]
+        for span in spans
+            match = span.innerHTML.match(regex)
+            @sweatifySpan(span, match) if match
 
-                        if curColor[sweatcap] == colors[sweatcap]
-                            curColor[sweatcap] = colorsAlt[sweatcap]
-                        else
-                            curColor[sweatcap] = colors[sweatcap]
-                        ##End of close brace colouring##
+    sweatifySpan: (span, match) ->
+        {openSyntax, closeSyntax} = config
 
-
-                numLineGroups-- #END OF WHILE#
-        , 16
+        color = openBrackets
+        if match[0].indexOf(openSyntax) >= 0 and match[0].indexOf(closeSyntax) < 0
+            openBrackets++
+            if openBrackets > totalColors
+                openBrackets = 0
+        else if match[0].indexOf(closeSyntax) >= 0 and match[0].indexOf(openSyntax) < 0
+            openBrackets--
+            if openBrackets < 0
+                openBrackets = totalColors
+            color = openBrackets
+        className = ' swackets-' + color
+        span.className = span.className.replace(/( swackets-\d+|$)/, className)
