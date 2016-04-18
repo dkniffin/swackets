@@ -34,10 +34,32 @@ class SwacketsView
         @subscriptions.dispose()
 
     config: ->
-        if (atom.config.get('swackets.syntax') == 'Brackets')
-            return {openSyntax: '{', closeSyntax: '}', regex: /^.*?([\{\}]+)$/}
-        else
-            return {openSyntax: '(', closeSyntax: ')', regex: /^.*?([\(\)]+)$/}
+        open = []
+        close = []
+
+        if (atom.config.get('swackets.colorBrackets'))
+          open.push '{'
+          close.push '}'
+
+        if (atom.config.get('swackets.colorParens'))
+          open.push '('
+          close.push ')'
+
+        if (atom.config.get('swackets.colorSquareBrackets'))
+          open.push '['
+          close.push ']'
+
+        openExpr = ('\\' + s for s in open)
+        closeExpr = ('\\' + s for s in close)
+        expr = openExpr + closeExpr
+
+        return {
+          openSyntax: open,
+          closeSyntax: close,
+          regex: new RegExp('^.*?([' + expr + ']+)$'),
+          openRegex: new RegExp('[' + openExpr + ']', 'g'),
+          closeRegex: new RegExp('[' + closeExpr + ']', 'g')
+        }
 
     getSwacketsStylesheet: ->
         if !stylesheet
@@ -93,7 +115,7 @@ class SwacketsView
             @sweatifySpans(spans)
 
     openBracketsOffsetFor: (lineNumber) ->
-        {openSyntax, closeSyntax} = config
+        {openRegex, closeRegex} = config
 
         range = new Range(new Point(0, 0), new Point(lineNumber, 0))
         editor = atom.workspace.getActiveTextEditor()
@@ -101,8 +123,8 @@ class SwacketsView
         text = editor.getTextInBufferRange(range)
 
         openBracketsOffset = 0
-        openBracketsOffset += text.match(new RegExp('\\' + openSyntax, 'g'))?.length || 0
-        openBracketsOffset -= text.match(new RegExp('\\' + closeSyntax, 'g'))?.length || 0
+        openBracketsOffset += text.match(openRegex)?.length || 0
+        openBracketsOffset -= text.match(closeRegex)?.length || 0
 
         return Math.max(0, openBracketsOffset % 11)
 
@@ -117,11 +139,11 @@ class SwacketsView
         {openSyntax, closeSyntax} = config
 
         color = openBrackets
-        if match[0].indexOf(openSyntax) >= 0 and match[0].indexOf(closeSyntax) < 0
+        if (match[0] in openSyntax) and (match[0] not in closeSyntax)
             openBrackets++
             if openBrackets > totalColors
                 openBrackets = 0
-        else if match[0].indexOf(closeSyntax) >= 0 and match[0].indexOf(openSyntax) < 0
+        else if (match[0] in closeSyntax) and (match[0] not in openSyntax)
             openBrackets--
             if openBrackets < 0
                 openBrackets = totalColors
