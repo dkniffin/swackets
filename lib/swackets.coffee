@@ -11,11 +11,20 @@ module.exports =
         items:
             type: 'string'
 
-    syntax:
-        title: 'Syntax To Colour:'
-        type: 'string'
-        default: 'Brackets'
-        enum: ['Brackets', 'Parentheses']
+    colorBrackets:
+        title: 'Color Brackets'
+        type: 'boolean'
+        default: true
+
+    colorParens:
+        title: 'Color Parentheses'
+        type: 'boolean'
+        default: false
+
+    colorSquareBrackets:
+        title: 'Color Square Brackets'
+        type: 'boolean'
+        default: false
 
   areaView: null
 
