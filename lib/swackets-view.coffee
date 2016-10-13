@@ -38,6 +38,7 @@ class SwacketsView
         close = []
 
         if (atom.config.get('swackets.colorBrackets'))
+          open.push '#{'
           open.push '{'
           close.push '}'
 
