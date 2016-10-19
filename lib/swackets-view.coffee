@@ -58,8 +58,6 @@ class SwacketsView
         modifiers = notEscapedModifier + bracketModifier
 
         return {
-          openSyntax: open,
-          closeSyntax: close,
           regex: new RegExp('^.*?([' + expr + ']+)$'),
           openRegex: new RegExp(modifiers + '[' + openExpr + ']', 'g'),
           closeRegex: new RegExp(modifiers + '[' + closeExpr + ']', 'g')
