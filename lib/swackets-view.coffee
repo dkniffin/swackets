@@ -38,8 +38,6 @@ class SwacketsView
         close = []
 
         if (atom.config.get('swackets.colorBrackets'))
-          open.push '#{'
-          open.push '${'
           open.push '{'
           close.push '}'
 
@@ -51,16 +49,20 @@ class SwacketsView
           open.push '['
           close.push ']'
 
-        openExpr = ('\\' + s for s in open)
-        closeExpr = ('\\' + s for s in close)
+        openExpr = ('\\' + s for s in open).join('')
+        closeExpr = ('\\' + s for s in close).join('')
         expr = openExpr + closeExpr
+
+        notEscapedModifier = '(?<!\\\\)'
+        bracketModifier = '(?:[$%#].?)?'
+        modifiers = notEscapedModifier + bracketModifier
 
         return {
           openSyntax: open,
           closeSyntax: close,
           regex: new RegExp('^.*?([' + expr + ']+)$'),
-          openRegex: new RegExp('[' + openExpr + ']', 'g'),
-          closeRegex: new RegExp('[' + closeExpr + ']', 'g')
+          openRegex: new RegExp(modifiers + '[' + openExpr + ']', 'g'),
+          closeRegex: new RegExp(modifiers + '[' + closeExpr + ']', 'g')
         }
 
     getSwacketsStylesheet: ->
@@ -138,14 +140,14 @@ class SwacketsView
             @sweatifySpan(span, match) if match
 
     sweatifySpan: (span, match) ->
-        {openSyntax, closeSyntax} = config
+        {openRegex, closeRegex} = config
 
         color = openBrackets
-        if (match[0] in openSyntax) and (match[0] not in closeSyntax)
+        if (match[0].match(openRegex)) and (! match[0].match(closeRegex))
             openBrackets++
             if openBrackets > totalColors
                 openBrackets = 0
-        else if (match[0] in closeSyntax) and (match[0] not in openSyntax)
+        else if (match[0].match(closeRegex)) and (! match[0].match(openRegex))
             openBrackets--
             if openBrackets < 0
                 openBrackets = totalColors
