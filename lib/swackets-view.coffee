@@ -53,16 +53,12 @@ class SwacketsView
         closeExpr = ('\\' + s for s in close).join('')
         expr = openExpr + closeExpr
 
-        notEscapedModifier = '(?<!\\\\)'
-        bracketModifier = '(?:[$%#].?)?'
-        modifiers = notEscapedModifier + bracketModifier
-
         return {
           openSyntax: open,
           closeSyntax: close,
           regex: new RegExp('^.*?([' + expr + ']+)$'),
-          openRegex: new RegExp(modifiers + '[' + openExpr + ']', 'g'),
-          closeRegex: new RegExp(modifiers + '[' + closeExpr + ']', 'g')
+          openRegex: new RegExp('[' + openExpr + ']', 'g'),
+          closeRegex: new RegExp('[' + closeExpr + ']', 'g')
         }
 
     getSwacketsStylesheet: ->
