@@ -76,17 +76,17 @@ class SwacketsView
         for rule in sheet.cssRules
           sheet.deleteRule(0)
         for color, index in colors
-          sheet.insertRule("atom-text-editor::shadow .swackets-#{index} {color: #{color}}")
+          sheet.insertRule("atom-text-editor .swackets-#{index} {color: #{color}}", 0)
 
     sweatifyTimeout: =>
         setTimeout @sweatify, 16
 
     sweatify: =>
-        lines = document.querySelector('atom-text-editor.is-focused::shadow .lines')
+        lines = document.querySelector('atom-text-editor.is-focused .lines')
         return if !lines
         lines.style.display = 'none'
 
-        lineGroups = @lineGroupsQueryToArray document.querySelectorAll('atom-text-editor.is-focused::shadow .lines > div:not(.cursors) > div:not(.icon-right)')
+        lineGroups = @lineGroupsQueryToArray document.querySelectorAll('atom-text-editor.is-focused .lines > div:not(.cursors) > div:not(.icon-right)')
         @sweatifyLineGroups(lineGroups)
 
         lines.style.display = ''
