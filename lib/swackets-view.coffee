@@ -126,7 +126,7 @@ class SwacketsView
         openBracketsOffset += text.match(openRegex)?.length || 0
         openBracketsOffset -= text.match(closeRegex)?.length || 0
 
-        return Math.max(0, openBracketsOffset % 11)
+        return Math.max(0, openBracketsOffset % (totalColors + 1))
 
     sweatifySpans: (spans) ->
         {regex} = config
